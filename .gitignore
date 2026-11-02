@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# VS Code / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+_tmp/
+
+# Raw photos are large (the 224x224 faces in dataset/processed/ ARE uploaded).
+# Delete the next line if you also want the original photos on GitHub.
+# Only upload people's faces if everyone in the dataset agrees, and keep the
+# repository private if they don't want it public.
+dataset/raw/
+
+# The trained model (~10 MB) can be rebuilt with `python train.py`.
+# Delete the next line if you want to upload your trained model too.
+models/face_model.keras

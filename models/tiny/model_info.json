@@ -1,0 +1,32 @@
+{
+  "target_board": "Arduino Nano 33 BLE Sense Rev2 (nRF52840, 1 MB flash, 256 KB RAM)",
+  "input": {
+    "shape": [
+      1,
+      96,
+      96,
+      1
+    ],
+    "color": "grayscale",
+    "dtype": "float32",
+    "range": "0-255 (model rescales internally)"
+  },
+  "output": {
+    "shape": [
+      1,
+      4
+    ],
+    "type": "softmax probabilities",
+    "classes": [
+      "Komal",
+      "Luke",
+      "Noah",
+      "Reece"
+    ]
+  },
+  "preprocessing": "square crop where the face fills almost the whole image (central 75% of preprocess.py's 224x224 crop), grayscale, resize to 96x96",
+  "params": 20772,
+  "float32_weights_kb": 81.1,
+  "validation_accuracy_float": 1.0,
+  "validation_images": 32
+}
