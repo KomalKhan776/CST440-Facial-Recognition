@@ -173,6 +173,20 @@ Model specification:
 - **Framing on the board:** there is no face detector on the Nano, so the camera image must look like the training images. Take a **square centre crop** of the camera frame (for example 120×120 from the OV7675's 160×120 QQVGA frame), convert it to grayscale and resize it to 96×96. The person's face should **fill almost the whole square** (about 30–50 cm from the camera).
 - **Representative data** for int8 calibration: the images in `dataset/processed/` (made by `preprocess.py --per_person 40` from the Google Drive photos), put through the same centre-75 % crop → grayscale → 96×96 steps (see `test_tiny.py` → `load()`).
 
+### Quantization (int8 TensorFlow Lite)
+```powershell
+python quantize.py                       # proper int8, checks accuracy against 80 %
+python quantize.py --target 0.95         # same, against the 95 % target
+python quantize.py --calibration naive   # baseline experiment: calibrate on random noise
+```
+`quantize.py` converts `tiny_face_model.keras` to a **full-integer int8** TFLite model, calibrating with the *training* images only (same split and preprocessing as `train_tiny.py`), then compares float vs int8 accuracy on the unseen validation images and on the `test_tiny.py` background tests. It writes:
+- `models/tiny/tiny_face_model_int8.tflite` – the model for the board
+- `models/tiny/quantization_report.json` – sizes, accuracies, quantization parameters, suggested tensor-arena size
+- `models/tiny/int8_confusion_matrix.png`
+- `arduino/face_model_data.h` – the model as a C array plus `FACE_MODEL_INPUT_SCALE` / `FACE_MODEL_INPUT_ZERO_POINT` (feed `q = round(pixel / scale) + zero_point`; normally just `pixel - 128`) and the class names
+
+`--calibration naive` is a documented baseline (int8 ranges set from random noise instead of faces); its files get a `_naive` suffix so they never replace the deployable model.
+
 ## Pushing to GitHub
 
 1. Create a new, empty repository on [github.com](https://github.com/new) (don't add a README there — this project already has one).
