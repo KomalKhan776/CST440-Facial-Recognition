@@ -1,4 +1,4 @@
-"""
+﻿"""
 Step 2 - Train the face recognition model.
 
 Uses transfer learning: a MobileNetV2 network pre-trained on ImageNet is used
@@ -75,6 +75,8 @@ def main():
     ap.add_argument("--fine_tune_epochs", type=int, default=10)
     ap.add_argument("--val_split", type=float, default=0.2)
     ap.add_argument("--out", default="models")
+    ap.add_argument("--balanced", action="store_true",
+                    help="weight classes so a big class (e.g. Unknown) does not drown out small ones")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -88,6 +90,14 @@ def main():
     val_ds = tf.keras.utils.image_dataset_from_directory(args.data, subset="validation", **common)
     class_names = train_ds.class_names
     print("Classes:", class_names)
+
+    class_weight = None
+    if args.balanced:
+        labels = np.concatenate([y.numpy() for _, y in train_ds])
+        counts = np.bincount(labels, minlength=len(class_names))
+        class_weight = {i: len(labels) / (len(class_names) * c) for i, c in enumerate(counts) if c}
+        print("Training images per class:", dict(zip(class_names, counts.tolist())))
+        print("Class weights:", {class_names[i]: round(w, 2) for i, w in class_weight.items()})
 
     AUTOTUNE = tf.data.AUTOTUNE
     train_ds = train_ds.cache().shuffle(500, seed=SEED).prefetch(AUTOTUNE)
@@ -104,7 +114,8 @@ def main():
     model.compile(optimizer=tf.keras.optimizers.Adam(1e-3),
                   loss="sparse_categorical_crossentropy", metrics=["accuracy"])
     model.summary()
-    h1 = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks)
+    h1 = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks,
+                   class_weight=class_weight)
     histories = [h1]
 
     # Phase 2: fine-tune the top layers of MobileNetV2 with a small learning rate
@@ -115,7 +126,8 @@ def main():
         model.compile(optimizer=tf.keras.optimizers.Adam(1e-5),
                       loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         h2 = model.fit(train_ds, validation_data=val_ds,
-                       epochs=args.fine_tune_epochs, callbacks=callbacks)
+                       epochs=args.fine_tune_epochs, callbacks=callbacks,
+                       class_weight=class_weight)
         histories.append(h2)
 
     model.save(model_path)

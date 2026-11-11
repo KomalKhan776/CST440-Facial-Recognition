@@ -75,6 +75,8 @@ def main():
     ap.add_argument("--face_fraction", type=float, default=0.75,
                     help="keep only this central part of each 224x224 crop (mostly face, little room)")
     ap.add_argument("--out", default="models/tiny")
+    ap.add_argument("--balanced", action="store_true",
+                    help="weight classes so a big class (e.g. Unknown) does not drown out small ones")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
@@ -139,7 +141,15 @@ def main():
         tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=6, min_lr=1e-5),
         tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=25, restore_best_weights=True),
     ]
-    hist = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks)
+    class_weight = None
+    if args.balanced:
+        labels = np.concatenate([y.numpy() for _, y in train_ds])
+        counts = np.bincount(labels, minlength=len(class_names))
+        class_weight = {i: len(labels) / (len(class_names) * c) for i, c in enumerate(counts) if c}
+        print("Training images per class:", dict(zip(class_names, counts.tolist())))
+        print("Class weights:", {class_names[i]: round(float(w), 2) for i, w in class_weight.items()})
+    hist = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks,
+                     class_weight=class_weight)
 
     model.save(model_path)
     model.export(os.path.join(args.out, "saved_model"))

@@ -22,3 +22,9 @@ dataset/raw/
 # The trained model (~10 MB) can be rebuilt with `python train.py`.
 # Delete the next line if you want to upload your trained model too.
 models/face_model.keras
+
+# Shared over Discord instead of GitHub
+capture.py
+
+# Keep ALL photos (raw, raw2, processed, LFW) off GitHub - share via the team Google Drive
+dataset/
