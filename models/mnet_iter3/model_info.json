@@ -1,0 +1,25 @@
+{
+  "architecture": "MobileNetV2 alpha=0.35, ImageNet weights, 96x96 gray->3ch",
+  "input": {
+    "shape": [
+      1,
+      96,
+      96,
+      1
+    ],
+    "range": "0-255 (model rescales internally)"
+  },
+  "classes": [
+    "Komal",
+    "Luke",
+    "Noah",
+    "Reece",
+    "Unknown"
+  ],
+  "params": 416613,
+  "validation_accuracy_float": 0.907,
+  "epochs_run": [
+    25,
+    10
+  ]
+}
