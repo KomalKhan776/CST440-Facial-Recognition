@@ -1,4 +1,4 @@
-﻿"""
+"""
 Quantize the tiny face model to full int8 TensorFlow Lite for the Arduino Nano 33 BLE Sense Rev2.
 
 Steps:
@@ -128,7 +128,13 @@ def background_tests(predict, X, y, size):
     return res
 
 
-def write_c_header(path, tflite_bytes, inp, out, class_names):
+def c_float(x):
+    """C float literal: 1 -> 1.0f (plain "1f" does not compile), 0.00390625 -> 0.00390625f."""
+    s = f"{x:.9g}"
+    return (s if any(c in s for c in ".en") else s + ".0") + "f"
+
+
+def write_c_header(path, tflite_bytes, inp, out, class_names, unknown_threshold=0.55):
     in_scale, in_zp = inp["quantization"]
     out_scale, out_zp = out["quantization"]
     lines = [
@@ -139,14 +145,17 @@ def write_c_header(path, tflite_bytes, inp, out, class_names):
         "",
         f"// Input: [1, {inp['shape'][1]}, {inp['shape'][2]}, {inp['shape'][3]}] int8 grayscale.",
         "// q = round(pixel / FACE_MODEL_INPUT_SCALE) + FACE_MODEL_INPUT_ZERO_POINT, clamp to [-128, 127]",
-        f"const float FACE_MODEL_INPUT_SCALE = {in_scale:.9g}f;",
+        f"const float FACE_MODEL_INPUT_SCALE = {c_float(in_scale)};",
         f"const int FACE_MODEL_INPUT_ZERO_POINT = {in_zp};",
         "// Output: int8 scores; prob = (q - FACE_MODEL_OUTPUT_ZERO_POINT) * FACE_MODEL_OUTPUT_SCALE",
-        f"const float FACE_MODEL_OUTPUT_SCALE = {out_scale:.9g}f;",
+        f"const float FACE_MODEL_OUTPUT_SCALE = {c_float(out_scale)};",
         f"const int FACE_MODEL_OUTPUT_ZERO_POINT = {out_zp};",
         "",
         f"const int FACE_MODEL_NUM_CLASSES = {len(class_names)};",
         "const char* const FACE_MODEL_CLASSES[] = {" + ", ".join(f'"{n}"' for n in class_names) + "};",
+        "// Board rule: if the top probability < FACE_MODEL_UNKNOWN_THRESHOLD, report \"Unknown\".",
+        "// (A top class of \"NoPerson\" means an empty frame and is reported as-is.)",
+        f"const float FACE_MODEL_UNKNOWN_THRESHOLD = {c_float(unknown_threshold)};",
         "",
         f"const unsigned int face_model_len = {len(tflite_bytes)};",
         "alignas(16) const unsigned char face_model[] = {",
@@ -171,6 +180,12 @@ def main():
     ap.add_argument("--calibration", choices=["faces", "naive"], default="faces",
                     help="faces = training images (proper); naive = random noise (baseline experiment)")
     ap.add_argument("--naive_images", type=int, default=5)
+    ap.add_argument("--test_dir", default=None,
+                    help="held-out test folder (e.g. dataset/v3/test_processed): also report float and int8 "
+                         "test accuracy with the board's 'max prob < threshold -> Unknown' rule")
+    ap.add_argument("--thresholds", type=float, nargs="+", default=[0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7])
+    ap.add_argument("--board_threshold", type=float, default=0.55,
+                    help="Unknown threshold written into the C header as FACE_MODEL_UNKNOWN_THRESHOLD")
     args = ap.parse_args()
 
     # Keep the baseline's files apart so it never overwrites the deployable model.
@@ -244,7 +259,7 @@ def main():
 
     # ---- Export for the Arduino ---------------------------------------------
     os.makedirs(os.path.dirname(args.header) or ".", exist_ok=True)
-    write_c_header(args.header, int8_tfl, q.inp, q.out, names)
+    write_c_header(args.header, int8_tfl, q.inp, q.out, names, args.board_threshold)
 
     act = largest_activation_bytes(int8_tfl)
     report = {
@@ -265,6 +280,18 @@ def main():
         "target": args.target,
         "meets_target": res["val_accuracy_int8"] >= args.target,
     }
+    if args.test_dir:
+        from eval_test import evaluate
+        int8_path = os.path.join(args.model_dir, "tiny_face_model_int8" + tag + ".tflite")
+        report["test_dir"] = args.test_dir
+        report["test_float"] = evaluate(os.path.join(args.model_dir, "tiny_face_model.keras"),
+                                        args.test_dir, args.thresholds)
+        report["test_int8"] = evaluate(int8_path, args.test_dir, args.thresholds)
+        print(f"\nHeld-out test set {args.test_dir} (max prob < threshold -> Unknown):")
+        print("threshold   float    int8")
+        for th in report["test_int8"]:
+            print(f"  {th:<8} {report['test_float'][th]['overall']:6.1%}  {report['test_int8'][th]['overall']:6.1%}"
+                  f"   int8 per class {report['test_int8'][th]['per_class']}")
     with open(os.path.join(args.model_dir, "quantization_report" + tag + ".json"), "w") as f:
         json.dump(report, f, indent=2)
 

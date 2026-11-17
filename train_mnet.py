@@ -1,4 +1,4 @@
-﻿"""
+"""
 Board-sized TRANSFER-LEARNING model for the Arduino Nano 33 BLE Sense Rev2.
 
 The tiny CNN in train_tiny.py (~20k parameters, trained from scratch) generalises poorly to new
@@ -7,14 +7,17 @@ width 0.35 with ImageNet weights - the same idea as train.py, but small enough f
 
     input : 96 x 96 x 1 grayscale, pixel values 0-255 (same as train_tiny.py, so the board code,
             quantize.py and the framing rules do not change)
-    output: softmax over the class folders (e.g. Komal, Luke, Noah, Reece, Unknown)
+    output: softmax over the class folders (e.g. Komal, Luke, NoPerson, Noah, Reece, Unknown)
 
 The grayscale image is repeated to 3 channels inside the model so the ImageNet weights can be used.
-Size: ~400k parameters -> roughly 0.5 MB as int8 (fits the 1 MB flash).
+Size: ~400k parameters -> roughly 0.6 MB as int8 (fits the 1 MB flash).
 
 Usage:
+    # iter3 (the defaults)
     python train_mnet.py --data dataset/v3/iter2_processed --out models/mnet_iter3 --balanced
-    python quantize.py --model_dir models/mnet_iter3 --data dataset/v3/iter2_processed
+    # iter5 float model; then train_qat.py turns it into the int8 board model
+    python train_mnet.py --data dataset/v6/train_np --out models/iter5_float --balanced --unfreeze 100
+        --ft_lr 1e-4 --ls 0.1 --fine_tune_epochs 40 --ft_patience 15 --seed 2
 """
 import argparse
 import json
@@ -55,13 +58,25 @@ def main():
     ap.add_argument("--val_split", type=float, default=0.2)
     ap.add_argument("--face_fraction", type=float, default=0.75)
     ap.add_argument("--balanced", action="store_true")
+    ap.add_argument("--unfreeze", type=int, default=40)
+    ap.add_argument("--ls", type=float, default=0.0)
+    ap.add_argument("--ft_lr", type=float, default=5e-5)
+    ap.add_argument("--seed", type=int, default=SEED,
+                    help="seed for weight init, shuffling and augmentation")
+    ap.add_argument("--split_seed", type=int, default=SEED,
+                    help="seed for the train/validation split (keep 42 so quantize.py calibrates on the same split)")
+    ap.add_argument("--patience", type=int, default=8,
+                    help="early-stopping patience (epochs without val_loss improvement) for the frozen-base phase")
+    ap.add_argument("--ft_patience", type=int, default=8,
+                    help="early-stopping patience for fine-tuning; the validation set is small and noisy, so 8 often "
+                         "stops fine-tuning after ~9 of --fine_tune_epochs epochs. 15+ lets it actually fine-tune")
     ap.add_argument("--out", default="models/mnet")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
-    tf.keras.utils.set_random_seed(SEED)
-    common = dict(validation_split=args.val_split, seed=SEED, color_mode="grayscale",
-                  image_size=(224, 224), batch_size=args.batch, label_mode="int")
+    tf.keras.utils.set_random_seed(args.seed)
+    common = dict(validation_split=args.val_split, seed=args.split_seed, color_mode="grayscale",
+                  image_size=(224, 224), batch_size=args.batch, label_mode="categorical")
     train_ds = tf.keras.utils.image_dataset_from_directory(args.data, subset="training", **common)
     val_ds = tf.keras.utils.image_dataset_from_directory(args.data, subset="validation", **common)
     class_names = train_ds.class_names
@@ -70,7 +85,7 @@ def main():
     # Same framing as train_tiny.py / the board: central 75 % of the face crop, 96x96
     tighten = lambda x, y: (tf.image.resize(tf.image.central_crop(x, args.face_fraction),
                                             (args.size, args.size), method="area"), y)
-    train_ds, val_ds = train_ds.map(tighten), val_ds.map(tighten)
+    train_ds, val_ds = train_ds.map(tighten).cache(), val_ds.map(tighten).cache()
 
     # Augmentation for new sessions: head turns, distance, lighting, a cheap camera
     augment = tf.keras.Sequential([
@@ -92,33 +107,33 @@ def main():
 
     class_weight = None
     if args.balanced:
-        labels = np.concatenate([y.numpy() for _, y in train_ds])
+        labels = np.concatenate([y.numpy().argmax(1) for _, y in train_ds])
         counts = np.bincount(labels, minlength=len(class_names))
         class_weight = {i: len(labels) / (len(class_names) * c) for i, c in enumerate(counts) if c}
         print("Training images per class:", dict(zip(class_names, counts.tolist())))
 
     AUTOTUNE = tf.data.AUTOTUNE
-    train_ds = (train_ds.cache().shuffle(1000, seed=SEED)
+    train_ds = (train_ds.shuffle(1000, seed=args.seed)
                 .map(lambda x, y: (tf.clip_by_value(degrade(augment(x, training=True)), 0, 255), y),
                      num_parallel_calls=AUTOTUNE).prefetch(AUTOTUNE))
-    val_ds = val_ds.cache().prefetch(AUTOTUNE)
+    val_ds = val_ds.prefetch(AUTOTUNE)
 
     model, base = build(len(class_names), args.size, args.alpha)
     path = os.path.join(args.out, "tiny_face_model.keras")   # same file name quantize.py expects
-    cbs = [tf.keras.callbacks.ModelCheckpoint(path, monitor="val_accuracy", save_best_only=True),
-           tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=8, restore_best_weights=True)]
+    ckpt = tf.keras.callbacks.ModelCheckpoint(path, monitor="val_accuracy", save_best_only=True)
+    early = lambda pat: tf.keras.callbacks.EarlyStopping(monitor="val_loss", patience=pat, restore_best_weights=True)
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(1e-3), loss="sparse_categorical_crossentropy",
-                  metrics=["accuracy"])
-    h1 = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=cbs,
+    loss = tf.keras.losses.CategoricalCrossentropy(label_smoothing=args.ls)
+    model.compile(optimizer=tf.keras.optimizers.Adam(1e-3), loss=loss, metrics=["accuracy"])
+    h1 = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=[ckpt, early(args.patience)],
                    class_weight=class_weight)
     # Fine-tune the top of MobileNetV2 with a small learning rate
     base.trainable = True
-    for layer in base.layers[:-40]:
+    for layer in base.layers[:-args.unfreeze]:
         layer.trainable = False
-    model.compile(optimizer=tf.keras.optimizers.Adam(5e-5), loss="sparse_categorical_crossentropy",
-                  metrics=["accuracy"])
-    h2 = model.fit(train_ds, validation_data=val_ds, epochs=args.fine_tune_epochs, callbacks=cbs,
+    model.compile(optimizer=tf.keras.optimizers.Adam(args.ft_lr), loss=loss, metrics=["accuracy"])
+    h2 = model.fit(train_ds, validation_data=val_ds, epochs=args.fine_tune_epochs,
+                   callbacks=[ckpt, early(args.ft_patience)],
                    class_weight=class_weight)
 
     model.save(path)
@@ -137,6 +152,8 @@ def main():
             "input": {"shape": [1, args.size, args.size, 1], "range": "0-255 (model rescales internally)"},
             "classes": class_names, "params": int(model.count_params()),
             "validation_accuracy_float": round(float(val_acc), 4),
+            "seed": args.seed, "split_seed": args.split_seed,
+            "args": vars(args),
             "epochs_run": [len(h1.history["accuracy"]), len(h2.history["accuracy"])]}
     with open(os.path.join(args.out, "model_info.json"), "w") as f:
         json.dump(info, f, indent=2)

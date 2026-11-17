@@ -28,3 +28,6 @@ capture.py
 
 # Keep ALL photos (raw, raw2, processed, LFW) off GitHub - share via the team Google Drive
 dataset/
+
+# Seed sweeps / experiments (dozens of models) - only the chosen model goes in models/iter5*
+models/sweep/

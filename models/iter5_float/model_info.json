@@ -1,0 +1,48 @@
+{
+  "architecture": "MobileNetV2 alpha=0.35, ImageNet weights, 96x96 gray->3ch",
+  "input": {
+    "shape": [
+      1,
+      96,
+      96,
+      1
+    ],
+    "range": "0-255 (model rescales internally)"
+  },
+  "classes": [
+    "Komal",
+    "Luke",
+    "NoPerson",
+    "Noah",
+    "Reece",
+    "Unknown"
+  ],
+  "params": 417894,
+  "validation_accuracy_float": 0.9524,
+  "seed": 2,
+  "split_seed": 42,
+  "args": {
+    "data": "dataset/v6/train_np",
+    "size": 96,
+    "alpha": 0.35,
+    "batch": 16,
+    "epochs": 25,
+    "fine_tune_epochs": 40,
+    "val_split": 0.2,
+    "face_fraction": 0.75,
+    "balanced": true,
+    "unfreeze": 100,
+    "ls": 0.1,
+    "ft_lr": 0.0001,
+    "seed": 2,
+    "split_seed": 42,
+    "stretch": false,
+    "patience": 8,
+    "ft_patience": 15,
+    "out": "models/iter5_float"
+  },
+  "epochs_run": [
+    23,
+    40
+  ]
+}

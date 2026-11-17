@@ -1,0 +1,442 @@
+{
+  "float_dir": "models/iter5_float",
+  "args": {
+    "float_dir": "models/iter5_float",
+    "data": "dataset/v6/train_np",
+    "out": "models/iter5",
+    "epochs": 15,
+    "lr": 2e-05,
+    "batch": 16,
+    "size": 96,
+    "alpha": 0.35,
+    "face_fraction": 0.75,
+    "val_split": 0.2,
+    "split_seed": 42,
+    "seed": 42,
+    "ls": 0.1,
+    "balanced": true,
+    "test_dir": "dataset/v4/test",
+    "thresholds": [
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6,
+      0.65,
+      0.7
+    ],
+    "header": "arduino/face_model_data.h",
+    "board_threshold": 0.55,
+    "stretch": false
+  },
+  "int8_tflite_kb": 618.1,
+  "largest_activation_kb": 108.0,
+  "qat_val_accuracy_history": [
+    0.9464,
+    0.9643,
+    0.9643,
+    0.9643,
+    0.9762,
+    0.994,
+    0.9643,
+    0.9762,
+    0.9881,
+    0.9821,
+    0.9881,
+    0.994,
+    0.9881,
+    0.9762,
+    0.9821
+  ],
+  "test_dir": "dataset/v4/test",
+  "test_float": {
+    "0.4": {
+      "overall": 0.8702,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.85,
+        "NoPerson": 0.85,
+        "Noah": 0.767,
+        "Reece": 0.8,
+        "Unknown": 0.95
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Komal",
+        "Noah\\Noah_025.jpg -> Komal",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Komal",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_012.jpg -> Reece",
+        "Unknown\\Unknown_036.jpg -> Luke"
+      ]
+    },
+    "0.45": {
+      "overall": 0.8702,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.85,
+        "NoPerson": 0.85,
+        "Noah": 0.767,
+        "Reece": 0.7,
+        "Unknown": 0.975
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Komal",
+        "Noah\\Noah_025.jpg -> Komal",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Komal",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_012.jpg -> Reece"
+      ]
+    },
+    "0.5": {
+      "overall": 0.8702,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.85,
+        "NoPerson": 0.85,
+        "Noah": 0.767,
+        "Reece": 0.7,
+        "Unknown": 0.975
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Komal",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Komal",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_012.jpg -> Reece"
+      ]
+    },
+    "0.55": {
+      "overall": 0.8397,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.75,
+        "NoPerson": 0.85,
+        "Noah": 0.733,
+        "Reece": 0.6,
+        "Unknown": 0.975
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_006.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "Luke\\Luke_017.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Noah\\Noah_029.jpg -> Unknown",
+        "Reece\\Reece_001.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Komal",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_012.jpg -> Reece"
+      ]
+    },
+    "0.6": {
+      "overall": 0.8321,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.7,
+        "NoPerson": 0.85,
+        "Noah": 0.7,
+        "Reece": 0.6,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_006.jpg -> Unknown",
+        "Luke\\Luke_007.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "Luke\\Luke_017.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Luke",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_014.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Noah\\Noah_029.jpg -> Unknown",
+        "Reece\\Reece_001.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Unknown",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    },
+    "0.65": {
+      "overall": 0.8092,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.6,
+        "NoPerson": 0.85,
+        "Noah": 0.667,
+        "Reece": 0.6,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_002.jpg -> Unknown",
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_006.jpg -> Unknown",
+        "Luke\\Luke_007.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "Luke\\Luke_009.jpg -> Unknown",
+        "Luke\\Luke_017.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_014.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Noah\\Noah_028.jpg -> Unknown",
+        "Noah\\Noah_029.jpg -> Unknown",
+        "Reece\\Reece_001.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Unknown",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    },
+    "0.7": {
+      "overall": 0.7786,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.55,
+        "NoPerson": 0.85,
+        "Noah": 0.567,
+        "Reece": 0.6,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_002.jpg -> Unknown",
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Luke\\Luke_006.jpg -> Unknown",
+        "Luke\\Luke_007.jpg -> Unknown",
+        "Luke\\Luke_008.jpg -> Unknown",
+        "Luke\\Luke_009.jpg -> Unknown",
+        "Luke\\Luke_016.jpg -> Unknown",
+        "Luke\\Luke_017.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_003.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_007.jpg -> Unknown",
+        "NoPerson\\noperson_noah_s0_012.jpg -> Unknown",
+        "Noah\\Noah_001.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_014.jpg -> Unknown",
+        "Noah\\Noah_020.jpg -> Unknown",
+        "Noah\\Noah_021.jpg -> Unknown",
+        "Noah\\Noah_022.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Noah\\Noah_024.jpg -> Unknown",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Noah\\Noah_028.jpg -> Unknown",
+        "Noah\\Noah_029.jpg -> Unknown",
+        "Reece\\Reece_001.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Unknown",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    }
+  },
+  "test_int8": {
+    "0.4": {
+      "overall": 0.9313,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 1.0,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.8,
+        "Unknown": 0.9
+      },
+      "errors": [
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_001.jpg -> Reece",
+        "Unknown\\Unknown_028.jpg -> Komal",
+        "Unknown\\Unknown_029.jpg -> Reece",
+        "Unknown\\Unknown_035.jpg -> Luke"
+      ]
+    },
+    "0.45": {
+      "overall": 0.9466,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 1.0,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.8,
+        "Unknown": 0.95
+      },
+      "errors": [
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Unknown\\Unknown_001.jpg -> Reece",
+        "Unknown\\Unknown_035.jpg -> Luke"
+      ]
+    },
+    "0.5": {
+      "overall": 0.9618,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 1.0,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.8,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    },
+    "0.55": {
+      "overall": 0.9618,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 1.0,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.8,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    },
+    "0.6": {
+      "overall": 0.9466,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.95,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.7,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown"
+      ]
+    },
+    "0.65": {
+      "overall": 0.9313,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.9,
+        "NoPerson": 1.0,
+        "Noah": 0.9,
+        "Reece": 0.6,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Noah",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Reece\\Reece_008.jpg -> Unknown"
+      ]
+    },
+    "0.7": {
+      "overall": 0.8931,
+      "per_class": {
+        "Komal": 1.0,
+        "Luke": 0.9,
+        "NoPerson": 1.0,
+        "Noah": 0.833,
+        "Reece": 0.3,
+        "Unknown": 1.0
+      },
+      "errors": [
+        "Luke\\Luke_003.jpg -> Unknown",
+        "Luke\\Luke_004.jpg -> Unknown",
+        "Noah\\Noah_006.jpg -> Unknown",
+        "Noah\\Noah_007.jpg -> Unknown",
+        "Noah\\Noah_023.jpg -> Unknown",
+        "Noah\\Noah_025.jpg -> Unknown",
+        "Noah\\Noah_027.jpg -> Unknown",
+        "Reece\\Reece_000.jpg -> Unknown",
+        "Reece\\Reece_002.jpg -> Unknown",
+        "Reece\\Reece_003.jpg -> Unknown",
+        "Reece\\Reece_004.jpg -> Unknown",
+        "Reece\\Reece_005.jpg -> Unknown",
+        "Reece\\Reece_007.jpg -> Unknown",
+        "Reece\\Reece_008.jpg -> Unknown"
+      ]
+    }
+  }
+}

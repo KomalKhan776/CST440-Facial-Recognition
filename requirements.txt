@@ -1,4 +1,7 @@
-tensorflow>=2.16
+tensorflow==2.21.0
+# Quantization-aware training (train_qat.py). tf-keras must match the tensorflow version.
+tf-keras==2.21.0
+tensorflow-model-optimization==0.8.1
 opencv-python>=4.8
 numpy
 scikit-learn
