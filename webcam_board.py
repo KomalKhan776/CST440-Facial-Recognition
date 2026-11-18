@@ -1,4 +1,4 @@
-"""
+﻿"""
 Laptop-webcam demo of the BOARD model (iter5, int8 TFLite) - same model and Unknown rule as the Nano.
 
 Preprocessing matches training: face square crop -> grayscale -> 224 -> central 75 % -> 96x96 -> int8.
@@ -36,8 +36,9 @@ class Int8Model:
         self.it = tf.lite.Interpreter(model_path=path)
         self.it.allocate_tensors()
         self.inp, self.out = self.it.get_input_details()[0], self.it.get_output_details()[0]
+        self.size = int(self.inp["shape"][1])  # 96 for iter5, 64 for the small board model
 
-    def __call__(self, img96):  # float32 96x96x1, 0-255
+    def __call__(self, img96):  # float32 SIZE x SIZE x 1, 0-255
         s, zp = self.inp["quantization"]
         x = np.clip(np.round(img96 / s + zp), -128, 127).astype(np.int8)[None]
         self.it.set_tensor(self.inp["index"], x)
@@ -47,12 +48,12 @@ class Int8Model:
         return (o - zp) * s
 
 
-def to96(bgr_square):
+def to96(bgr_square, size=96):
     g = cv2.cvtColor(bgr_square, cv2.COLOR_BGR2GRAY)
     g = cv2.resize(g, (224, 224), interpolation=cv2.INTER_AREA)
     c = int(224 * (1 - 0.75) / 2)
     g = g[c:224 - c, c:224 - c]
-    return cv2.resize(g, (96, 96), interpolation=cv2.INTER_AREA).astype(np.float32)[..., None]
+    return cv2.resize(g, (size, size), interpolation=cv2.INTER_AREA).astype(np.float32)[..., None]
 
 
 def label(probs, names, th):
@@ -88,7 +89,7 @@ def main():
 
         if board:  # Nano-style: square centre crop, no detector
             side = min(H, W); x0, y0 = (W - side) // 2, (H - side) // 2
-            name, conf = label(model(to96(frame[y0:y0 + side, x0:x0 + side])), names, args.threshold)
+            name, conf = label(model(to96(frame[y0:y0 + side, x0:x0 + side], model.size)), names, args.threshold)
             box = (x0, y0, side, side)
         else:
             faces = detector.detect(frame)
@@ -97,7 +98,7 @@ def main():
             else:
                 x, y, w, h, _ = max(faces, key=lambda f: f[2] * f[3])  # biggest face
                 crop = square_crop(frame, x, y, w, h)
-                name, conf = label(model(to96(crop)), names, args.threshold)
+                name, conf = label(model(to96(crop, model.size)), names, args.threshold)
                 box = (x, y, w, h)
 
         recent.append(name)
@@ -113,7 +114,7 @@ def main():
             x, y, w, h = box
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
         cv2.putText(frame, f"{name} {conf * 100:.0f}%", (15, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.1, color, 3)
-        cv2.putText(frame, f"iter5 int8 | {'BOARD crop' if board else 'face detector'} | "
+        cv2.putText(frame, f"{os.path.basename(os.path.dirname(args.model))} int8 | {'BOARD crop' if board else 'face detector'} | "
                            f"sound {'on' if sound else 'off'} | q s b", (15, H - 15),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
         cv2.imshow("Board model (iter5 int8) - press q to quit", frame)

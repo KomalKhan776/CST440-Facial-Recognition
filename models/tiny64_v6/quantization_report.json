@@ -1,0 +1,38 @@
+{
+  "float_tflite_kb": 88.3,
+  "int8_tflite_kb": 47.8,
+  "size_reduction": 0.459,
+  "largest_activation_kb": 16.0,
+  "suggested_tensor_arena_kb": 48,
+  "input_quantization": {
+    "scale": 1.0,
+    "zero_point": -128
+  },
+  "output_quantization": {
+    "scale": 0.00390625,
+    "zero_point": -128
+  },
+  "calibration_images": 676,
+  "validation_images": 168,
+  "val_accuracy_float": 0.8393,
+  "val_accuracy_int8": 0.8274,
+  "all_accuracy_float": 0.8791,
+  "all_accuracy_int8": 0.8732,
+  "float_int8_agreement_all": 0.9929,
+  "background_tests_float": {
+    "original": 0.8791,
+    "background_black": 0.8045,
+    "background_grey": 0.8732,
+    "background_white": 0.7216,
+    "face_on_other_room": 0.8033
+  },
+  "background_tests_int8": {
+    "original": 0.8732,
+    "background_black": 0.8021,
+    "background_grey": 0.8768,
+    "background_white": 0.7156,
+    "face_on_other_room": 0.7998
+  },
+  "target": 0.8,
+  "meets_target": true
+}
