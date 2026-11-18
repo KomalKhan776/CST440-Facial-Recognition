@@ -4,7 +4,7 @@ Tiny model for the Arduino Nano 33 BLE Sense Rev2 (nRF52840: 1 MB flash, 256 KB 
 The big model (train.py, MobileNetV2 224x224 RGB) is ~9 MB and cannot run on the
 board. This script trains a small CNN that does:
 
-    input : 96 x 96 x 1  grayscale, pixel values 0-255 (float32)
+    input : 64 x 64 x 1  grayscale, pixel values 0-255 (float32)
     output: 4 softmax probabilities in the order of models/tiny/class_names.json
 
 It only uses ops supported by TensorFlow Lite Micro (Conv2D, DepthwiseConv2D,
@@ -68,7 +68,7 @@ def build_tiny_model(num_classes, size):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="dataset/processed")
-    ap.add_argument("--size", type=int, default=96)
+    ap.add_argument("--size", type=int, default=64)
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--val_split", type=float, default=0.2)
