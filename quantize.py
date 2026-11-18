@@ -171,7 +171,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model_dir", default="models/tiny")
     ap.add_argument("--data", default="dataset/processed")
-    ap.add_argument("--size", type=int, default=96)
+    ap.add_argument("--size", type=int, default=64)
     ap.add_argument("--face_fraction", type=float, default=0.75)
     ap.add_argument("--val_split", type=float, default=0.2)
     ap.add_argument("--header", default="arduino/face_model_data.h")

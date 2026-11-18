@@ -3,8 +3,8 @@
   "input": {
     "shape": [
       1,
-      96,
-      96,
+      64,
+      64,
       1
     ],
     "color": "grayscale",
@@ -24,9 +24,9 @@
       "Reece"
     ]
   },
-  "preprocessing": "square crop where the face fills almost the whole image (central 75% of preprocess.py's 224x224 crop), grayscale, resize to 96x96",
+  "preprocessing": "square crop where the face fills almost the whole image (central 75% of preprocess.py's 224x224 crop), grayscale, resize to 64x64",
   "params": 20772,
   "float32_weights_kb": 81.1,
-  "validation_accuracy_float": 1.0,
-  "validation_images": 32
+  "validation_accuracy_float": 0.9467,
+  "validation_images": 75
 }

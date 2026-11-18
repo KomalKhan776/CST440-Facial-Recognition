@@ -2,8 +2,8 @@
   "float_tflite_kb": 87.3,
   "int8_tflite_kb": 47.5,
   "size_reduction": 0.456,
-  "largest_activation_kb": 36.0,
-  "suggested_tensor_arena_kb": 112,
+  "largest_activation_kb": 16.0,
+  "suggested_tensor_arena_kb": 48,
   "input_quantization": {
     "scale": 1.0,
     "zero_point": -128
@@ -12,26 +12,26 @@
     "scale": 0.00390625,
     "zero_point": -128
   },
-  "calibration_images": 128,
-  "validation_images": 32,
-  "val_accuracy_float": 1.0,
-  "val_accuracy_int8": 1.0,
-  "all_accuracy_float": 0.9938,
-  "all_accuracy_int8": 0.9938,
-  "float_int8_agreement_all": 1.0,
+  "calibration_images": 302,
+  "validation_images": 75,
+  "val_accuracy_float": 0.9467,
+  "val_accuracy_int8": 0.96,
+  "all_accuracy_float": 0.9682,
+  "all_accuracy_int8": 0.9708,
+  "float_int8_agreement_all": 0.9973,
   "background_tests_float": {
-    "original": 0.9938,
-    "background_black": 0.9563,
-    "background_grey": 0.9437,
-    "background_white": 0.4375,
-    "face_on_other_room": 0.7562
+    "original": 0.9682,
+    "background_black": 0.9072,
+    "background_grey": 0.9443,
+    "background_white": 0.6711,
+    "face_on_other_room": 0.8727
   },
   "background_tests_int8": {
-    "original": 0.9938,
-    "background_black": 0.9375,
-    "background_grey": 0.925,
-    "background_white": 0.4,
-    "face_on_other_room": 0.6813
+    "original": 0.9708,
+    "background_black": 0.8992,
+    "background_grey": 0.9231,
+    "background_white": 0.6684,
+    "face_on_other_room": 0.8568
   },
   "target": 0.8,
   "meets_target": true
